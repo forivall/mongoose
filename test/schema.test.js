@@ -2672,6 +2672,18 @@ describe('schema', function() {
     assert.equal(schema.path('subdocs').casterConstructor.schema.path('name').instance, 'String');
   });
 
+  it('supports `of` for nested array type definition', function() {
+    const schema = new Schema({
+      nums: [{ type: Array, of: Number }],
+      tags: [{ type: 'Array', of: String }],
+      subdocs: [{ type: Array, of: Schema({ name: String }) }]
+    });
+
+    assert.equal(schema.path('nums.$').caster.instance, 'Number');
+    assert.equal(schema.path('tags.$').caster.instance, 'String');
+    assert.equal(schema.path('subdocs.$').casterConstructor.schema.path('name').instance, 'String');
+  });
+
   it('should use the top-most class\'s getter/setter gh-8892', function() {
     class C1 {
       get hello() {
